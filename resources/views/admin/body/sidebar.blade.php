@@ -1,7 +1,7 @@
 <nav class="sidebar">
     <div class="sidebar-header">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-            Admin<span>UI</span>
+            Ecomma<span>UI</span>
         </a>
         <div class="sidebar-toggler not-active">
             <span></span>

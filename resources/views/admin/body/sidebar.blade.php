@@ -204,7 +204,13 @@
             <li class="nav-item">
                 <a href="{{route('all.about')}}" class="nav-link">
                     <i class="link-icon" data-feather="hash"></i>
-                    <span class="link-title">About</span>
+                    <span class="link-title">About Us</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{route('all.contact')}}" class="nav-link">
+                    <i class="link-icon" data-feather="phone"></i>
+                    <span class="link-title">Content Us</span>
                 </a>
             </li>
         </ul>

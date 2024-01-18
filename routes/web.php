@@ -7,6 +7,7 @@ use App\Http\Controllers\Backend\AboutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\PropertyTypeController;
+use App\Http\Controllers\Backend\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,5 +100,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::get('/edit/about/{id}', 'EditAbout')->name('edit.about');
         Route::post('/update/about/{id}', 'UpdateAbout')->name('update.about');
         Route::get('/delete/about/{id}', 'DeleteAbout')->name('delete.about');
+    });
+    Route::controller(ContactController::class)->group(function(){
+        Route::get('/all/contact', 'AllContact')->name('all.contact');
+        Route::get('/add/contact', 'AddContact')->name('add.contact');
+        Route::post('/store/contact', 'StoreContact')->name('store.contact');
+        Route::get('/edit/contact/{id}', 'EditContact')->name('edit.contact');
+        Route::post('/update/contact/{id}', 'UpdateContact')->name('update.contact');
+        Route::get('/delete/contact/{id}', 'DeleteContact')->name('delete.contact');
     });
 });

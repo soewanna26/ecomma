@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\Backend\AboutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\PropertyTypeController;
@@ -90,5 +91,13 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::get('/edit/admin/{id}', 'EditAdmin')->name('edit.admin');
         Route::post('/update/admin/{id}', 'UpdateAdmin')->name('update.admin');
         Route::get('/delete/admin/{id}', 'DeleteAdmin')->name('delete.admin');
+    });
+    Route::controller(AboutController::class)->group(function(){
+        Route::get('/all/about', 'AllAbout')->name('all.about');
+        Route::get('/add/about', 'AddAbout')->name('add.about');
+        Route::post('/store/about', 'StoreAbout')->name('store.about');
+        Route::get('/edit/about/{id}', 'EditAbout')->name('edit.about');
+        Route::post('/update/about/{id}', 'UpdateAbout')->name('update.about');
+        Route::get('/delete/about/{id}', 'DeleteAbout')->name('delete.about');
     });
 });

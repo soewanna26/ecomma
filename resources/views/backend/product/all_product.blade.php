@@ -44,9 +44,9 @@
                                             <td>{{ $i++ }}</td>
                                             <td>{{ $product->id }}</td>
                                             <td>
-                                                <img src="{{ !empty($item->photo) ? url('upload/product_images/' . $item->photo) : url('upload/no_image.jpg') }}"
+                                                <img src="{{ !empty($product->photo) ? url('upload/product_images/' . $product->photo) : url('upload/no_image.jpg') }}"
                                                     style="object-fit: cover" alt="" class="rounded">
-                                                {{ $item->product_name }}
+                                                {{ $product->product_name }}
                                             </td>
                                             <td>{{ $product->cat_name }}</td>
                                             <td>{{ $product->description }}</td>
@@ -85,14 +85,14 @@
                                                 {{-- {{ $product->status }} --}}
                                             </td>
                                             <td>
-                                                <a href="{{route('products.gallery'),$product->id}}"
+                                                <a href="{{ route('products.gallery', ['id' => $product->id]) }}"
                                                     class="text-decoration-none">
                                                     <button class="btn btn-outline-info py-1"><i
                                                             class="ti-gallery"></i></button>
                                                 </a>
-                                                <a href="{{ route('edit.category', $product->id) }}"
+                                                <a href="{{ route('edit.category', ['id' => $product->id]) }}"
                                                     class="btn btn-inverse-warning">Edit</a>
-                                                <a href="{{ route('delete.category', $product->id) }}"
+                                                <a href="{{ route('delete.category', ['id' => $product->id]) }}"
                                                     class="btn btn-inverse-danger" id="delete">Delete</a>
                                             </td>
                                         </tr>

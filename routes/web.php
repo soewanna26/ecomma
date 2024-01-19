@@ -4,10 +4,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\Backend\AboutController;
+use App\Http\Controllers\Backend\CategoryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\PropertyTypeController;
 use App\Http\Controllers\Backend\ContactController;
+use App\Http\Controllers\Backend\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,7 +87,7 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::get('/admin/delete/roles/{id}', 'AdminDeleteRoles')->name('admin.delete.roles');
     });
 
-    Route::controller(AdminController::class)->group(function(){
+    Route::controller(AdminController::class)->group(function () {
         Route::get('/all/admin', 'AllAdmin')->name('all.admin');
         Route::get('/add/admin', 'AddAdmin')->name('add.admin');
         Route::post('/store/admin', 'StoreAdmin')->name('store.admin');
@@ -93,7 +95,7 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::post('/update/admin/{id}', 'UpdateAdmin')->name('update.admin');
         Route::get('/delete/admin/{id}', 'DeleteAdmin')->name('delete.admin');
     });
-    Route::controller(AboutController::class)->group(function(){
+    Route::controller(AboutController::class)->group(function () {
         Route::get('/all/about', 'AllAbout')->name('all.about');
         Route::get('/add/about', 'AddAbout')->name('add.about');
         Route::post('/store/about', 'StoreAbout')->name('store.about');
@@ -101,12 +103,34 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::post('/update/about/{id}', 'UpdateAbout')->name('update.about');
         Route::get('/delete/about/{id}', 'DeleteAbout')->name('delete.about');
     });
-    Route::controller(ContactController::class)->group(function(){
+    Route::controller(ContactController::class)->group(function () {
         Route::get('/all/contact', 'AllContact')->name('all.contact');
         Route::get('/add/contact', 'AddContact')->name('add.contact');
         Route::post('/store/contact', 'StoreContact')->name('store.contact');
         Route::get('/edit/contact/{id}', 'EditContact')->name('edit.contact');
         Route::post('/update/contact/{id}', 'UpdateContact')->name('update.contact');
         Route::get('/delete/contact/{id}', 'DeleteContact')->name('delete.contact');
+    });
+    Route::controller(CategoryController::class)->group(function () {
+        Route::get('/all/category', 'AllCategory')->name('all.category');
+        Route::get('/add/category', 'AddCategory')->name('add.category');
+        Route::post('/store/category', 'StoreCategory')->name('store.category');
+        Route::get('/edit/category/{id}', 'EditCategory')->name('edit.category');
+        Route::post('/update/category/{id}', 'UpdateCategory')->name('update.category');
+        Route::get('/delete/category/{id}', 'DeleteCategory')->name('delete.category');
+    });
+    Route::controller(ProductController::class)->group(function () {
+        Route::get('/all/product', 'AllProduct')->name('all.product');
+        Route::get('/add/product', 'AddProduct')->name('add.product');
+        Route::post('/store/product', 'StoreProduct')->name('store.product');
+        Route::get('/edit/product/{id}', 'EditProduct')->name('edit.product');
+        Route::post('/update/product/{id}', 'UpdateProduct')->name('update.product');
+        Route::get('/delete/product/{id}', 'DeleteProduct')->name('delete.product');
+
+        //gallery
+        Route::get('/products/gallery/{id}', [ProductController::class, 'gallery'])->name('products.gallery');
+        Route::delete('/product/photo', [ProductController::class, 'deletePhoto'])->name('products.photo.delete');
+        Route::post('/product/photo/upload', [ProductController::class, 'uploadPhoto'])->name('products.photo.upload');
+        Route::post('product-update_status', [ProductController::class, 'update_product_status'])->name('pupdate_status');
     });
 });

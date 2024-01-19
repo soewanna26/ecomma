@@ -46,7 +46,7 @@ class AboutController extends Controller
             $data->content = $request->content;
 
             // Handle photo upload
-            if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            if ($request->hasFile('photo')) {
                 $file = $request->file('photo');
                 $filename = date('YmdHi') . $file->getClientOriginalName();
                 $file->move(public_path('upload/about_images'), $filename);
@@ -107,14 +107,13 @@ class AboutController extends Controller
                 $filename = date('YmdHi') . $file->getClientOriginalName();
                 $file->move(public_path('upload/about_images'), $filename);
                 $about->photo = $filename;
-
-                $about->save();
-                $notification = array(
-                    'message' => 'About create successfully',
-                    'alert-type' => 'success'
-                );
-                return redirect()->route('all.about')->with($notification);
             }
+            $about->save();
+            $notification = [
+                'message' => 'About create successfully',
+                'alert-type' => 'success'
+            ];
+            return redirect()->route('all.about')->with($notification);
         } catch (Exception $e) {
             // Handle exceptions
             $notification = [
@@ -128,11 +127,27 @@ class AboutController extends Controller
 
     public function DeleteAbout($id)
     {
-        AboutUs::findOrFail($id)->delete();
+        // Find the AboutUs record by ID
+        $about = AboutUs::findOrFail($id);
+
+        // Delete the associated photo file
+        if (!empty($about->photo)) {
+            $filePath = public_path('upload/about_images') . '/' . $about->photo;
+
+            // Check if the file exists before attempting to delete
+            if (file_exists($filePath)) {
+                unlink($filePath); // Delete the file
+            }
+        }
+
+        // Delete the AboutUs record from the database
+        $about->delete();
+
         $notification = array(
             'message' => 'About Deleted successfully',
             'alert-type' => 'success'
         );
+
         return redirect()->route('all.about')->with($notification);
     }
 }

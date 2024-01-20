@@ -44,8 +44,8 @@
                                             <td>{{ $i++ }}</td>
                                             <td>{{ $product->id }}</td>
                                             <td>
-                                                <img src="{{ !empty($product->photo) ? url('upload/product_images/' . $product->photo) : url('upload/no_image.jpg') }}"
-                                                    style="object-fit: cover" alt="" class="rounded">
+                                                {{-- <img src="{{ !empty($product->photo) ? url('upload/product_images/' . $product->photo) : url('upload/no_image.jpg') }}"
+                                                    style="object-fit: cover" alt="" class="rounded"> --}}
                                                 {{ $product->product_name }}
                                             </td>
                                             <td>{{ $product->cat_name }}</td>
@@ -67,33 +67,30 @@
                                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                                                     <div class="row g-1">
                                                         <div class="col-md-12">
-                                                            <select name="status" id="{{ $product->id }}"
-                                                                class="pstatus-select form-select bg-light text-dark text-center {{ $product->id }}">
-                                                                <option value="" disabled
-                                                                    class="bg-secondary text-light">Select Order Status
-                                                                </option>
+                                                            <select name="status"
+                                                                class="pstatus-select form-select bg-light text-dark text-center">
                                                                 <option value="active"
                                                                     {{ $product->status == 'active' ? 'selected' : '' }}>
                                                                     Active</option>
-                                                                <option value="unactive"
-                                                                    {{ $product->status == 'unactive' ? 'selected' : '' }}>
-                                                                    Unactive</option>
+                                                                <option value="inactive"
+                                                                    {{ $product->status == 'inactive' ? 'selected' : '' }}>
+                                                                    Inactive</option>
                                                             </select>
                                                         </div>
                                                     </div>
+                                                    <button type="submit">Update Status</button>
                                                 </form>
                                                 {{-- {{ $product->status }} --}}
                                             </td>
                                             <td>
                                                 <a href="{{ route('products.gallery', ['id' => $product->id]) }}"
                                                     class="text-decoration-none">
-                                                    <button class="btn btn-outline-info py-1"><i
-                                                            class="ti-gallery"></i></button>
+                                                    <button class="btn btn-outline-info py-1"><i></i>Gallery</button>
                                                 </a>
-                                                <a href="{{ route('edit.category', ['id' => $product->id]) }}"
-                                                    class="btn btn-inverse-warning">Edit</a>
-                                                <a href="{{ route('delete.category', ['id' => $product->id]) }}"
-                                                    class="btn btn-inverse-danger" id="delete">Delete</a>
+                                                <a href="{{ route('edit.product', ['id' => $product->id]) }}"
+                                                    class="btn btn-outline-warning">Edit</a>
+                                                <a href="{{ route('delete.product', ['id' => $product->id]) }}"
+                                                    class="btn btn-outline-danger" id="delete">Delete</a>
                                             </td>
                                         </tr>
                                     @endforeach

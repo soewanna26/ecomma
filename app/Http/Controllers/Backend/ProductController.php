@@ -25,7 +25,7 @@ class ProductController extends Controller
     }
     public function AddProduct()
     {
-        $categories = Category::select('name','id')->get();
+        $categories = Category::select('name', 'id')->get();
         return view('backend.product.add_product', compact('categories'));
     }
     public function StoreProduct(Request $request)
@@ -105,7 +105,8 @@ class ProductController extends Controller
     public function EditProduct($id)
     {
         $product = Product::findOrFail($id);
-        return view('backend.product.edit_product', compact('product'));
+        $categories = Category::get();
+        return view('backend.product.edit_product', compact('product', 'categories'));
     }
     public function UpdateProduct(Request $request, $id)
     {
@@ -116,7 +117,6 @@ class ProductController extends Controller
                 'description' => ['required', 'string', 'max:255'],
                 'price' => ['required', 'string', 'max:255'],
                 'dollor' => ['required', 'string', 'max:255'],
-                'photo' => ['required', 'mimetypes:image/jpg,image/png,image/svg,image/jpeg'],
             ]);
             if ($validator->fails()) {
                 $notification = [
@@ -189,5 +189,86 @@ class ProductController extends Controller
         }
 
         $product->delete();
+        $notification = [
+            'message' => 'Product Deleted Successfully.',
+            'alert-type' => 'success'
+        ];
+
+        return redirect()->route('all.product')->with($notification);
+    }
+    public function update_product_status(Request $request)
+    {
+        $product_id = $request->product_id;
+        DB::table('products')->where('id', $product_id)->update([
+            'status' => $request->status
+        ]);
+        $notification = [
+            'message' => 'Product Status Update Successfully.',
+            'alert-type' => 'success'
+        ];
+        return redirect()->route('all.product')->with($notification);
+    }
+    public function gallery($id)
+    {
+        $product = Product::findOrFail($id);
+        return view('backend.product.gallery', compact('product'));
+    }
+
+    public function uploadPhoto(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
+
+        // Ensure that $product->photo is an array or initialize it as an empty array
+        $product->photo = $product->photo ?? [];
+
+        if ($request->hasFile('photo')) {
+            $files = $request->file('photo');
+            $newPhotos = [];
+
+            foreach ($files as $file) {
+                // Handle each file individually
+                $filename = date('YmdHi') . $file->getClientOriginalName();
+                $file->move(public_path('upload/product_images'), $filename);
+
+                // Add the filename to the list of new photos
+                $newPhotos[] = $filename;
+            }
+
+            // Concatenate the new photos with the existing ones
+            $product->photo = array_merge($product->photo, $newPhotos);
+
+            // Save the updated photos in the database
+            $product->update();
+        }
+
+        return redirect()->back()->with('success', 'Successfully added more images');
+    }
+
+    public function deletePhoto(Request $request)
+    {
+        $product = Product::findOrFail($request->product_id);
+
+        // Remove the specified photo from the array
+        $photos = is_array($product->photo) ? $product->photo : explode(',', $product->photo);
+        $photoToDelete = $request->photo;
+
+        if (($key = array_search($photoToDelete, $photos)) !== false) {
+            // Remove the photo from the array
+            unset($photos[$key]);
+
+            // Update the product with the modified photo array
+            $product->photo = $photos;
+            $product->update();
+
+            // Delete the actual file from the server
+            $filePath = public_path('upload/product_images/' . $photoToDelete);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            return redirect()->back()->with('success', 'Successfully deleted the photo');
+        } else {
+            return redirect()->back()->with('error', 'Photo not found');
+        }
     }
 }

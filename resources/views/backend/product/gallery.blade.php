@@ -23,22 +23,20 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                 </form>
                 <div class="row mt-5">
-                    @if (!empty($product->photo))
-                        @php
-                            $photos = is_array($product->photo) ? $product->photo : explode(',', $product->photo);
-                        @endphp
-
-                        @foreach ($photos as $photo)
+                    @if ($photoArray[0] != null)
+                        @foreach ($photoArray as $photo)
                             <div class="col-4 col-md-3 position-relative">
-                                <img src="{{ asset('upload/product_images/' . $photo) }}" class="img-fluid img-thumbnail"
-                                    alt="" style="height: 300px; object-fit: contain;">
+                                <img src="{{ asset('storage/app/public/product_photos/' . $photo) }}"
+                                    class="img-fluid img-thumbnail" alt=""
+                                    style="height: 300px; object-fit: contain;">
                                 <form action="{{ route('products.photo.delete') }}" method="POST">
                                     @csrf
                                     @method('DELETE')
-                                    {{-- <input type="hidden" name="product_id" value="{{ $product->id }}"> --}}
+                                    <input type="hidden" name="product_id" value="{{ $product_id }}">
                                     <input type="hidden" name="photo" value="{{ $photo }}">
                                     <button class="btn btn-sm btn-danger position-absolute end-0 bottom-0"
-                                        id="delete">Delete</button>
+                                        onclick="return confirm('Are you sure you want to delete?')"><i
+                                            class="ti-trash"></i></button>
                                 </form>
                             </div>
                         @endforeach

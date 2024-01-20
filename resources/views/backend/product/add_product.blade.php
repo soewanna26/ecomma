@@ -178,14 +178,14 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label" for="formFile">File upload</label>
-                                        <input class="form-control" type="file" id="image" name="photo">
+                                        <input type="file" class="form-control text-white" name="photo[]"
+                                            id="image" multiple required>
                                         <div class="text-danger form-control-feedback">
                                             {{ $errors->first('photo') }}
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <img class="wd-80 rounded-circle equal-size-image" id="showImage"
-                                            src="{{ asset('upload/no_image.jpg') }}" alt="profile">
+                                        <div id="imagePreviewContainer"></div>
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -221,14 +221,38 @@
             </div>
         </div>
     </div>
+    <style>
+        #imagePreviewContainer {
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .preview-image {
+            margin-right: 5px;
+            max-width: 100px;
+            max-height: 100px;
+
+        }
+    </style>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#image').change(function(e) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#showImage').attr('src', e.target.result);
+                $('#imagePreviewContainer').empty(); // Clear previous previews
+
+                var files = e.target.files;
+                for (var i = 0; i < files.length; i++) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        $('#imagePreviewContainer').append(
+                            '<img class="preview-image rounded-circle equal-size-image mr-2px" src="' +
+                            e.target.result + '" alt="profile">'
+                        );
+                    }
+
+                    reader.readAsDataURL(files[i]);
                 }
-                reader.readAsDataURL(e.target.files['0']);
             })
         })
     </script>

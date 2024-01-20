@@ -44,7 +44,7 @@ class ProductController extends Controller
                 'xlarge_quantity' => ['required', 'numeric', 'max:255'],
                 'xxlarge_quantity' => ['required', 'numeric', 'max:255'],
                 'xxxlarge_quantity' => ['required', 'numeric', 'max:255'],
-                'photo' => ['required', 'mimetypes:image/jpg,image/png,image/svg,image/jpeg'],
+                'photo.*' => ['required', 'mimetypes:image/jpg,image/png,image/svg,image/jpeg'],
                 'status' => ['required']
             ]);
             if ($validator->fails()) {
@@ -76,13 +76,23 @@ class ProductController extends Controller
                 $product->xxlarge_quantity = $request->xxlarge_quantity;
                 $product->xxxlarge_quantity = $request->xxxlarge_quantity;
             }
-            if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                $filename = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('upload/product_images'), $filename);
-                $product->photo = $filename;
+
+            $photoArray = "";
+            foreach($request->photo as $key => $photo) {
+                $product_photo = time().'.'.$photo->getClientOriginalName();
+                $destinationPath = 'public/product_photos/';
+                $photo->storeAs($destinationPath, $product_photo);
+
+                if($key === 0) {
+                    $photoArray .= $product_photo;
+                } else {
+                    $photoArray .= "'x'";
+                    $photoArray .= $product_photo;
+                }
             }
+
             $product->visable_time = $request->visable_time;
+            $product->photo = $photoArray;
             $product->status = $request->status;
             $product->save();
 
@@ -210,8 +220,10 @@ class ProductController extends Controller
     }
     public function gallery($id)
     {
-        $product = Product::findOrFail($id);
-        return view('backend.product.gallery', compact('product'));
+        $product = Product::find($id);
+        $photoArray = explode("'x'", $product->photo);
+        $product_id = $id;
+        return view('backend.product.gallery', compact('product','photoArray'));
     }
 
     public function uploadPhoto(Request $request)

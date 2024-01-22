@@ -126,6 +126,7 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::get('/edit/product/{id}', 'EditProduct')->name('edit.product');
         Route::post('/update/product/{id}', 'UpdateProduct')->name('update.product');
         Route::get('/delete/product/{id}', 'DeleteProduct')->name('delete.product');
+        Route::get('/export/product', 'ExportProduct')->name('export.product');
 
         //gallery
         Route::get('/products/gallery/{id}', [ProductController::class, 'gallery'])->name('products.gallery');

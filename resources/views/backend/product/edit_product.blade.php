@@ -81,11 +81,22 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <div class="form-group" style="display: flex">
-                                            <h3> Sizes: </h3>
-                                            <h3> &nbsp;{{ ucfirst($product->size_type) }}</h3>
+                                        <div class="form-group" style="display: flex; align-items: center; padding : 5px">
+                                            <label class="control-label" style="margin-right: 10px; font-size: 18px;">Sizes:</label>
 
-                                            <div class="text-danger form-control-feedback">
+                                            <div class="input-group" style="flex-grow: 1;">
+                                                <span class="input-group-addon"
+                                                    style="font-size: 20px; color: {{ $product->size_type === 'no'
+                                                        ? 'red'
+                                                        : ($product->size_type === 'free'
+                                                            ? 'blue'
+                                                            : ($product->size_type === 'normal'
+                                                                ? 'green'
+                                                                : '')) }}">
+                                                    {{ ucfirst($product->size_type) }}
+                                            </div>
+
+                                            <div class="text-danger" style="margin-left: 10px;">
                                                 {{ $errors->first('size_type') }}
                                             </div>
                                         </div>
@@ -170,7 +181,7 @@
                                         </div>
                                     @endif
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6 mb-3">
                                     <div class="form-group">
                                         <label for="visable_time">Launch Time</label>
                                         <input type="datetime-local" class="form-control" name="visable_time"

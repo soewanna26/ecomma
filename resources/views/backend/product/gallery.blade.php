@@ -26,9 +26,8 @@
                     @if ($photoArray[0] != null)
                         @foreach ($photoArray as $photo)
                             <div class="col-4 col-md-3 position-relative">
-                                <img src="{{ asset('storage/app/public/product_photos/' . $photo) }}"
-                                    class="img-fluid img-thumbnail" alt=""
-                                    style="height: 300px; object-fit: contain;">
+                                <img src="/storage/product_photos/{{ $photo }}" class="img-fluid img-thumbnail"
+                                    alt="" style="height: 300px; object-fit: contain;">
                                 <form action="{{ route('products.photo.delete') }}" method="POST">
                                     @csrf
                                     @method('DELETE')
@@ -36,7 +35,7 @@
                                     <input type="hidden" name="photo" value="{{ $photo }}">
                                     <button class="btn btn-sm btn-danger position-absolute end-0 bottom-0"
                                         onclick="return confirm('Are you sure you want to delete?')"><i
-                                            class="ti-trash"></i></button>
+                                            class="fa fa-trash"></i></button>
                                 </form>
                             </div>
                         @endforeach

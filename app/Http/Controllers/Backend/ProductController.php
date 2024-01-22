@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Exports\ProductsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\DeliveryInfo;
@@ -11,7 +12,10 @@ use App\Models\Product;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -78,12 +82,12 @@ class ProductController extends Controller
             }
 
             $photoArray = "";
-            foreach($request->photo as $key => $photo) {
-                $product_photo = time().'.'.$photo->getClientOriginalName();
+            foreach ($request->photo as $key => $photo) {
+                $product_photo = time() . '.' . $photo->getClientOriginalName();
                 $destinationPath = 'public/product_photos/';
                 $photo->storeAs($destinationPath, $product_photo);
 
-                if($key === 0) {
+                if ($key === 0) {
                     $photoArray .= $product_photo;
                 } else {
                     $photoArray .= "'x'";
@@ -152,13 +156,19 @@ class ProductController extends Controller
                 $product->xxlarge_quantity = $request->xxlarge_quantity;
                 $product->xxxlarge_quantity = $request->xxxlarge_quantity;
             }
-            if ($request->file('photo')) {
-                $file = $request->file('photo');
-                @unlink(public_path('upload/about_images/' . $product->photo));
-                $filename = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('upload/product_images'), $filename);
-                $product->photo = $filename;
+
+            $destinationPath = 'public/product_photos/';
+            if ($request->hasFile('photo')) {
+                $request->validate([
+                    'photo' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:10240']
+                ]);
+                $product_photo = time() . '.' . $request->photo->getClientOriginalName();
+                $request->photo->storeAs($destinationPath, $product_photo);
+            } else {
+                $product_photo = $product->photo;
             }
+
+            $product->photo = $product_photo;
             $product->visable_time = $request->visable_time;
             $product->save();
             $notification = [
@@ -182,13 +192,13 @@ class ProductController extends Controller
         $product = Product::find($id);
         $order_product = Order::where('product_id', $id)->first();
 
-        // Delete the associated photo file
-        if (!empty($product->photo)) {
-            $filePath = public_path('upload/product_images') . '/' . $product->photo;
-
-            // Check if the file exists before attempting to delete
-            if (file_exists($filePath)) {
-                unlink($filePath); // Delete the file
+        $photoArray = explode("'x'", $product->photo);
+        foreach ($photoArray as $key => $p) {
+            $filePath = 'public/product_photos/' . $p;
+            if (Storage::exists($filePath)) {
+                Storage::delete($filePath);
+            } else {
+                Log::error("File not found: $filePath");
             }
         }
 
@@ -223,35 +233,32 @@ class ProductController extends Controller
         $product = Product::find($id);
         $photoArray = explode("'x'", $product->photo);
         $product_id = $id;
-        return view('backend.product.gallery', compact('product','photoArray'));
+        return view('backend.product.gallery', compact('product', 'photoArray', 'product_id'));
     }
 
     public function uploadPhoto(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
 
-        // Ensure that $product->photo is an array or initialize it as an empty array
-        $product->photo = $product->photo ?? [];
+        $photoArray = $product->photo;
+        foreach ($request->photo as $p) {
+            $photoName = time() . '.' . $p->getClientOriginalName();
 
-        if ($request->hasFile('photo')) {
-            $files = $request->file('photo');
-            $newPhotos = [];
 
-            foreach ($files as $file) {
-                // Handle each file individually
-                $filename = date('YmdHi') . $file->getClientOriginalName();
-                $file->move(public_path('upload/product_images'), $filename);
-
-                // Add the filename to the list of new photos
-                $newPhotos[] = $filename;
+            if ($photoArray != '') {
+                $photoArray .= "'x'";
+                $photoArray .= $photoName;
+            } else {
+                $photoArray .= $photoName;
             }
 
-            // Concatenate the new photos with the existing ones
-            $product->photo = array_merge($product->photo, $newPhotos);
-
-            // Save the updated photos in the database
-            $product->update();
+            // store photo
+            $destinationPath = 'public/product_photos/';
+            $p->storeAs($destinationPath, $photoName);
         }
+
+        $product->photo = $photoArray;
+        $product->update();
 
         return redirect()->back()->with('success', 'Successfully added more images');
     }
@@ -259,28 +266,36 @@ class ProductController extends Controller
     public function deletePhoto(Request $request)
     {
         $product = Product::findOrFail($request->product_id);
+        $photoArray = explode("'x'", $product->photo);
+        $photoArrayName = '';
 
-        // Remove the specified photo from the array
-        $photos = is_array($product->photo) ? $product->photo : explode(',', $product->photo);
-        $photoToDelete = $request->photo;
+        $deletedKey = '';
 
-        if (($key = array_search($photoToDelete, $photos)) !== false) {
-            // Remove the photo from the array
-            unset($photos[$key]);
+        foreach ($photoArray as $key => $p) {
 
-            // Update the product with the modified photo array
-            $product->photo = $photos;
-            $product->update();
+            if ($p === $request->photo) {
+                Storage::delete('public/product_photos/' . $request->photo);
 
-            // Delete the actual file from the server
-            $filePath = public_path('upload/product_images/' . $photoToDelete);
-            if (file_exists($filePath)) {
-                unlink($filePath);
+                $deletedKey = $key;
+            } else {
+                if ($key === 0) {
+                    $photoArrayName .= $p;
+                } else if ($key === 1 && $deletedKey == '0') {
+                    $photoArrayName .= $p;
+                } else {
+                    $photoArrayName .= "'x'";
+                    $photoArrayName .= $p;
+                }
             }
-
-            return redirect()->back()->with('success', 'Successfully deleted the photo');
-        } else {
-            return redirect()->back()->with('error', 'Photo not found');
         }
+
+        $product->photo = $photoArrayName;
+        $product->update();
+
+        return redirect()->back()->with('success', 'Successfully deleted an image');
+    }
+    public function ExportProduct()
+    {
+        return Excel::download(new ProductsExport, 'product.xlsx');
     }
 }

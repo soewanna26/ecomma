@@ -33,7 +33,7 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="name_mm" class="form-label">name_mm</label>
+                                        <label for="name_mm" class="form-label">Name_mm</label>
                                         <input type="text" class="form-control" id="name_mm" name="name_mm"
                                             autocomplete="off" value="{{$category->name_mm}}">
                                         <div class="text-danger form-control-feedback">

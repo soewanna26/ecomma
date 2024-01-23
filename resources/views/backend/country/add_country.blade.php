@@ -18,10 +18,9 @@
                                         </ul>
                                     </div>
                                 @endif
-                                <h6 class="card-title">Category Form</h6>
+                                <h6 class="card-title">Country Form</h6>
 
-                                <form class="forms-sample" method="POST" action={{ route('store.category') }}
-                                    enctype="multipart/form-data">
+                                <form class="forms-sample" method="POST" action={{ route('store.country') }}>
                                     @csrf
 
                                     <div class="mb-3">
@@ -33,15 +32,15 @@
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="name_mm" class="form-label">Name_mm</label>
-                                        <input type="text" class="form-control" id="name_mm" name="name_mm"
+                                        <label for="code" class="form-label">Code</label>
+                                        <input type="number" class="form-control" id="code" name="code"
                                             autocomplete="off">
                                         <div class="text-danger form-control-feedback">
-                                            {{ $errors->first('name_mm') }}
+                                            {{ $errors->first('code') }}
                                         </div>
                                     </div>
                                     <button type="submit" class="btn btn-primary me-2">Save Change</button>
-                                    <a href="{{ route('all.category') }}" class="btn btn-danger">Cancel</a>
+                                    <a href="{{ route('all.country') }}" class="btn btn-danger">Cancel</a>
                                 </form>
 
                             </div>
@@ -49,9 +48,6 @@
                     </div>
                 </div>
             </div>
-            <!-- middle wrapper end -->
-            <!-- right wrapper start -->
-            <!-- right wrapper end -->
         </div>
 
     </div>

@@ -9,6 +9,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Backend\RoleController;
 use App\Http\Controllers\Backend\PropertyTypeController;
 use App\Http\Controllers\Backend\ContactController;
+use App\Http\Controllers\Backend\CountryController;
+use App\Http\Controllers\Backend\CustomerController;
 use App\Http\Controllers\Backend\ProductController;
 
 /*
@@ -133,5 +135,25 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         Route::delete('/product/photo', [ProductController::class, 'deletePhoto'])->name('products.photo.delete');
         Route::post('/product/photo/upload', [ProductController::class, 'uploadPhoto'])->name('products.photo.upload');
         Route::post('product-update_status', [ProductController::class, 'update_product_status'])->name('pupdate_status');
+    });
+    Route::controller(CountryController::class)->group(function () {
+        Route::get('/all/country', 'AllCountry')->name('all.country');
+        Route::get('/add/country', 'AddCountry')->name('add.country');
+        Route::post('/store/country', 'StoreCountry')->name('store.country');
+        Route::get('/edit/country/{id}', 'EditCountry')->name('edit.country');
+        Route::post('/update/country/{id}', 'UpdateCountry')->name('update.country');
+        Route::get('/delete/country/{id}', 'DeleteCountry')->name('delete.country');
+    });
+    Route::controller(CustomerController::class)->group(function () {
+        Route::get('/all/customer', 'AllCustomer')->name('all.customer');
+        Route::get('/add/customer', 'AddCustomer')->name('add.customer');
+        Route::post('/store/customer', 'StoreCustomer')->name('store.customer');
+        Route::get('/edit/customer/{id}', 'EditCustomer')->name('edit.customer');
+        Route::post('/update/customer/{id}', 'UpdateCustomer')->name('update.customer');
+        Route::get('/delete/customer/{id}', 'DeleteCustomer')->name('delete.customer');
+
+        //for Address Json
+        Route::get('getDistrict', 'getDistrict')->name('getDistrict');
+        Route::get('getTownship', 'getTownship')->name('getTownship');
     });
 });

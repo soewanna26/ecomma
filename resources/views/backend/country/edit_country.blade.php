@@ -18,30 +18,30 @@
                                         </ul>
                                     </div>
                                 @endif
-                                <h6 class="card-title">Category Form</h6>
+                                <h6 class="card-title">Update Category Form</h6>
 
-                                <form class="forms-sample" method="POST" action={{ route('store.category') }}
+                                <form class="forms-sample" method="POST" action={{ route('update.country',$country->id) }}
                                     enctype="multipart/form-data">
                                     @csrf
 
                                     <div class="mb-3">
                                         <label for="name" class="form-label">Name</label>
                                         <input type="text" class="form-control" id="name" name="name"
-                                            autocomplete="off">
+                                            autocomplete="off" value="{{$country->name}}">
                                         <div class="text-danger form-control-feedback">
                                             {{ $errors->first('name') }}
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label for="name_mm" class="form-label">Name_mm</label>
-                                        <input type="text" class="form-control" id="name_mm" name="name_mm"
-                                            autocomplete="off">
+                                        <label for="code" class="form-label">Code</label>
+                                        <input type="text" class="form-control" id="code" name="code"
+                                            autocomplete="off" value="{{$country->code}}">
                                         <div class="text-danger form-control-feedback">
-                                            {{ $errors->first('name_mm') }}
+                                            {{ $errors->first('code') }}
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary me-2">Save Change</button>
-                                    <a href="{{ route('all.category') }}" class="btn btn-danger">Cancel</a>
+                                    <button type="submit" class="btn btn-primary me-2">Update Change</button>
+                                    <a href="{{ route('all.country') }}" class="btn btn-danger">Cancel</a>
                                 </form>
 
                             </div>
@@ -49,9 +49,6 @@
                     </div>
                 </div>
             </div>
-            <!-- middle wrapper end -->
-            <!-- right wrapper start -->
-            <!-- right wrapper end -->
         </div>
 
     </div>

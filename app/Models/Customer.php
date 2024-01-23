@@ -10,9 +10,27 @@ class Customer extends Model
 {
     use HasFactory;
     protected $table = 'customers';
-    protected $fillable = ['id', 'customer_name', 'phone_primary', 'email', 'password', 'address', 'home_no', 'street_name', 'division_id', 'township_id', 'active_time', 'active_status'];
+    protected $fillable = ['id', 'customer_name', 'phone_primary', 'address', 'division_id','district_id', 'township_id'];
+
     public function orders(): HasMany
     {
         return $this->HasMany(Order::class,'customer_id','id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+    public function division()
+    {
+        return $this->belongsTo(Division::class, 'division_id');
+    }
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
+    }
+    public function township()
+    {
+        return $this->belongsTo(Township::class, 'township_id');
     }
 }

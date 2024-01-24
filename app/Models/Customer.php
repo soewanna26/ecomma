@@ -11,6 +11,7 @@ class Customer extends Model
     use HasFactory;
     protected $table = 'customers';
     protected $fillable = ['id', 'customer_name', 'phone_primary', 'address', 'division_id','district_id', 'township_id'];
+    protected $guarded = [];
 
     public function orders(): HasMany
     {

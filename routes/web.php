@@ -11,6 +11,8 @@ use App\Http\Controllers\Backend\PropertyTypeController;
 use App\Http\Controllers\Backend\ContactController;
 use App\Http\Controllers\Backend\CountryController;
 use App\Http\Controllers\Backend\CustomerController;
+use App\Http\Controllers\Backend\InvoiceController;
+use App\Http\Controllers\Backend\OrderController;
 use App\Http\Controllers\Backend\ProductController;
 
 /*
@@ -155,5 +157,27 @@ Route::middleware(['auth', 'roles:admin'])->group(function () {
         //for Address Json
         Route::get('getDistrict', 'getDistrict')->name('getDistrict');
         Route::get('getTownship', 'getTownship')->name('getTownship');
+    });
+        Route::controller(InvoiceController::class)->group(function () {
+        Route::get('/all/invoice', 'AllInvoice')->name('all.invoice');
+        Route::get('/add/invoice', 'AddInvoice')->name('add.invoice');
+        Route::post('/store/invoice', 'StoreInvoice')->name('store.invoice');
+        Route::get('/edit/invoice/{id}', 'EditInvoice')->name('edit.invoice');
+        Route::post('/update/invoice/{id}', 'UpdateInvoice')->name('update.invoice');
+        Route::get('/delete/invoice/{id}', 'DeleteInvoice')->name('delete.invoice');
+    });
+        Route::controller(OrderController::class)->group(function () {
+        Route::get('/all/order', 'AllOrder')->name('all.order');
+        Route::get('/add/order', 'AddOrder')->name('add.order');
+        Route::post('/store/order', 'StoreOrder')->name('store.order');
+        Route::get('/edit/order/{id}', 'EditOrder')->name('edit.order');
+        Route::post('/update/order/{id}', 'UpdateOrder')->name('update.order');
+        Route::get('/delete/order/{id}', 'DeleteOrder')->name('delete.order');
+
+
+        Route::post('order-update_status', [OrderController::class, 'update_order_status'])->name('update_status');
+        Route::get('getProductInfo', [OrderController::class, 'getProductInfo'])->name('getProductInfo');
+        Route::get('getProduct', [OrderController::class, 'getProduct'])->name('getProduct');
+        Route::get('getCustomerInfo', [OrderController::class, 'getCustomerInfo'])->name('getCustomerInfo');
     });
 });

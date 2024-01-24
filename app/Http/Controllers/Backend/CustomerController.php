@@ -71,7 +71,11 @@ class CustomerController extends Controller
     public function EditCustomer($id)
     {
         $customer = Customer::findOrFail($id);
-        return view('backend.customer.add_customer', compact('customer'));
+        $countries = Country::all();
+        $divisions = Division::all();
+        $districts = District::all();
+        $townships = Township::all();
+        return view('backend.customer.edit_customer', compact('customer','countries','divisions','districts','townships'));
     }
 
     public function UpdateCustomer(Request $request, $id)
@@ -88,7 +92,7 @@ class CustomerController extends Controller
             ]);
             if ($validator->fails()) {
                 $notification = [
-                    'message' => 'Customer creation failed. Please check the form for errors.',
+                    'message' => 'Customer Update failed. Please check the form for errors.',
                     'alert-type' => 'error'
                 ];
 
@@ -105,7 +109,7 @@ class CustomerController extends Controller
 
             $data->save();
             $notification = [
-                'message' => 'Customer create Successfully',
+                'message' => 'Customer Update Successfully',
                 'alert-type' => 'success',
             ];
             return redirect()->route('all.customer')->with($notification);

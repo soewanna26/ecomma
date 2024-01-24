@@ -12,9 +12,9 @@ class Order extends Model
     protected $fillable = ['id', 'invoice_id', 'customer_id', 'product_id', 'price', 'size', 'status'];
     protected $table = 'ordered_products';
 
-    public function product(): HasMany
+    public function product()
     {
-        return $this->hasMany(Product::class, 'product_id', 'id');
+        return $this->hasOne(Product::class, 'id', 'product_id');
     }
     public function invoice()
     {

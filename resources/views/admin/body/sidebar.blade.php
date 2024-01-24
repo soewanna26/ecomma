@@ -29,13 +29,13 @@
                 <div class="collapse" id="uiCategory">
                     <ul class="nav sub-menu">
                         <li class="nav-item">
-                            <a href="{{route('all.category')}}" class="nav-link"> Category</a>
+                            <a href="{{ route('all.category') }}" class="nav-link"> Category</a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route('all.product')}}" class="nav-link">Product</a>
+                            <a href="{{ route('all.product') }}" class="nav-link">Product</a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route('all.country')}}" class="nav-link">Country</a>
+                            <a href="{{ route('all.country') }}" class="nav-link">Country</a>
                         </li>
                     </ul>
                 </div>
@@ -46,6 +46,18 @@
                 <a href="{{ route('all.customer') }}" class="nav-link">
                     <i class="fa fa-user"></i>
                     <span class="link-title">Customer</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('all.invoice') }}" class="nav-link">
+                    <i class="fa fa-sticky-note-o"></i>
+                    <span class="link-title">Invoice</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('all.order') }}" class="nav-link">
+                    <i class="fa fa-bell"></i>
+                    <span class="link-title">Order</span>
                 </a>
             </li>
 

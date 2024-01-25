@@ -16,7 +16,7 @@
                                     </ul>
                                 </div>
                             @endif
-                            <h4 class="card-title text-uppercase">Order Update</h4>
+                            <h4 class="card-title text-uppercase">Order Create</h4>
 
                             <form action="{{ route('update.order', $order->id) }}" method="POST" class="forms-sample"
                                 enctype="multipart/form-data">
@@ -30,12 +30,12 @@
                                                 <option disabled selected> Select Category </option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
-                                                        @if ($order->category_id == $category->id) selected ='selected' @endif>
+                                                        @if ($category->id) selected = "selected" @endif>
                                                         {{ $category->name }} </option>
                                                 @endforeach
                                             </select>
                                             <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('product_id') }}
+                                                {{ $errors->first('category_id') }}
                                             </div>
                                         </div>
                                     </div>
@@ -44,12 +44,11 @@
                                             <label for=""> Product Name </label>
                                             <select class="form-select bg-dark text-white" name="product_id" id="product"
                                                 aria-label="Default select example" required>
-                                                <option disabled selected> Select Product </option>
+                                                <option disabled selected> Choose Product </option>
                                                 @foreach ($products as $product)
                                                     <option value="{{ $product->id }}"
-                                                        @if ($order->product_id == $product->id) selected ='selected' @endif>
-                                                        {{ $product->product_name }}
-                                                    </option>
+                                                        @if ($order->product_id == $product->id) selected = "selected" @endif>
+                                                        {{ $product->product_name }} </option>
                                                 @endforeach
                                             </select>
                                             <div class="text-danger form-control-feedback">
@@ -61,7 +60,7 @@
                                         <div class="form-group">
                                             <label for=""> Original Price </label>
                                             <input type="text" class="form-control" name="original_price" id="price"
-                                                placeholder="Original Price" required>
+                                                placeholder="Original Price" value="{{ $order->original_price }}" required>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('original_price') }}
                                             </div>
@@ -71,7 +70,7 @@
                                         <div class="form-group">
                                             <label for=""> Discount %</label>
                                             <input type="text" class="form-control" name="on_discount" id="discount"
-                                                placeholder="Discount">
+                                                placeholder="Discount" value="{{ $order->on_discount }}">
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('on_discount') }}
                                             </div>
@@ -83,17 +82,15 @@
                                         <div class="form-group">
                                             <label for=""> Discount Price </label>
                                             <input type="number" min="0" class="form-control" name="discount_price"
-                                                id="discount_price" placeholder="Discount Price" required>
-                                            <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('discount_price') }}
-                                            </div>
+                                                value="0" id="discount_price" placeholder="Discount Price">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for=""> Quantity </label>
                                             <input type="number" min="0" class="form-control" name="quantity"
-                                                id="quantity" placeholder="Quantity" required>
+                                                id="quantity" placeholder="Quantity" value="{{ $order->quantity }}"
+                                                required>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('quantity') }}
                                             </div>
@@ -103,7 +100,8 @@
                                         <div class="form-group">
                                             <label for=""> Total Price </label>
                                             <input type="number" min="0" class="form-control" name="total_price"
-                                                id="total_price" placeholder="Total Price" required>
+                                                id="total_price" placeholder="Total Price"
+                                                value="{{ $order->total_price }}" required>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('total_price') }}
                                             </div>
@@ -115,8 +113,12 @@
                                             <select class="form-select bg-dark text-white" name="status"
                                                 aria-label="Default select example" required>
                                                 <option disabled selected> Select Status </option>
-                                                <option value="pending">Pending</option>
-                                                <option value="delivered">Delivered</option>
+                                                <option
+                                                    value="pending"{{ $order->status === 'pending' ? ' selected' : '' }}>
+                                                    Pending</option>
+                                                <option
+                                                    value="delivered"{{ $order->status === 'delivered' ? ' selected' : '' }}>
+                                                    Delivered</option>
                                             </select>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('status') }}
@@ -132,61 +134,29 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for=""> Customer Name </label>
-
-                                            <select class="form-select bg-dark text-white customer_select"
-                                                name="customer_id" id="customer_id" aria-label="Default select example">
-                                                <option disabled selected> Select Customer Name </option>
+                                            <select class="form-select bg-dark text-white" name="customer_id"
+                                                id="" aria-label="Default select example" required>
+                                                <option disabled selected> Choose Customer Name </option>
                                                 @foreach ($customers as $customer)
-                                                    <option value="{{ $customer->id }}"> {{ $customer->customer_name }}
-                                                    </option>
+                                                    <option value="{{ $customer->id }}"
+                                                        @if ($order->customer_id == $customer->id) selected = "selected" @endif>
+                                                        {{ $customer->customer_name }} </option>
                                                 @endforeach
-
                                             </select>
-
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('customer_id') }}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group customer_name">
-                                            <label for="">New Customer Name </label>
-                                            <input type="text" class="form-control" name="customer_name"
-                                                id="" placeholder="New Customer Name">
-                                            <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group phone_primary">
-                                            <label for="">Primary Phone </label>
-                                            <input type="text" class="form-control" name="phone_primary"
-                                                id="phone_primary" placeholder="Example: 09123456789">
-                                            <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group phone_primary">
-                                            <label for="">Secondary Phone </label>
-                                            <input type="text" class="form-control" name="phone_secondary"
-                                                id="phone_secondary" placeholder="">
-                                            <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group division">
+                                        <div class="form-group">
                                             <label for="">State/Division</label>
-                                            <select class="form-select bg-dark text-white" name="division_id"
-                                                id="division_id" aria-label="Default select example">
+                                            <select class="form-select bg-dark text-light" name="division_id"
+                                                id="division_id" aria-label="Default select example" required>
                                                 <option disabled selected> Select Division </option>
                                                 @foreach ($divisions as $division)
                                                     <option value="{{ $division->id }}"
-                                                        {{ old('division_id') == $division->division_name ? 'selected' : '' }}>
+                                                        @if ($delivery_info->division_id == $division->id) selected @endif>
                                                         {{ $division->division_name }}</option>
                                                 @endforeach
                                             </select>
@@ -196,11 +166,15 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group district">
+                                        <div class="form-group">
                                             <label for="">District</label>
                                             <select class="form-select bg-dark text-light" name="district_id"
-                                                id="district_id" aria-label="Default select example">
-                                                <option></option>
+                                                id="district_id" aria-label="Default select example" required>
+                                                @foreach ($districts as $district)
+                                                    <option value="{{ $district->id }}"
+                                                        @if ($delivery_info->district_id == $district->id) selected @endif>
+                                                        {{ $district->district_name }} </option>
+                                                @endforeach
                                             </select>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('district_id') }}
@@ -208,44 +182,46 @@
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <div class="form-group township">
+                                        <div class="form-group">
                                             <label for="">Township</label>
                                             <select class="form-select bg-dark text-light" name="township_id"
-                                                id="township_id" aria-label="Default select example">
-                                                <option></option>
+                                                id="township_id" aria-label="Default select example" required>
+                                                @foreach ($townships as $township)
+                                                    <option value="{{ $township->id }}"
+                                                        @if ($delivery_info->township_id == $township->id) selected @endif>
+                                                        {{ $township->township_name }}</option>
+                                                @endforeach
                                             </select>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('township_id') }}
                                             </div>
                                         </div>
                                     </div>
-
-                                    <div class="col-md-3">
-                                        <div class="form-group home_no">
-                                            <label for="">Home No: </label>
-                                            <input type="text" class="form-control" name="home_no" id="home_no"
-                                                placeholder="No(1) " value="{{ old('home_no') }}">
+                                    <div class="col-md-6">
+                                        <div class="form-group payment">
+                                            <label for="">Payment</label>
+                                            <select class="form-select bg-dark text-white" name="payment_method"
+                                                aria-label="Default select example" required>
+                                                <option disabled selected> Select Payment</option>
+                                                <option
+                                                    value="cash"{{ $order->payment_method === 'cash' ? ' selected' : '' }}>
+                                                    Cash</option>
+                                                <option
+                                                    value="kpay"{{ $order->payment_method === 'kpay' ? ' selected' : '' }}>
+                                                    Kpay</option>
+                                                <option
+                                                    value="banking"{{ $order->payment_method === 'banking' ? ' selected' : '' }}>
+                                                    Banking</option>
+                                            </select>
                                             <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('home_no') }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group street">
-                                            <label for="">Street Name </label>
-                                            <input type="text" class="form-control" name="street_name"
-                                                id="street_name" placeholder="Mayangone Street "
-                                                value="{{ old('street_name') }}">
-                                            <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('street_name') }}
+                                                {{ $errors->first('payment_method') }}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="form-group address">
+                                        <div class="form-group">
                                             <label for="">Delivery Address </label>
-                                            <textarea name="address" id="address" readonly class="form-control bg-dark"
-                                                placeholder="No(1), 18th Street, Latha Township, Yangon">{{ old('address') }}</textarea>
+                                            <textarea name="address" id="address" class="form-control bg-dark">{{ $delivery_info->delivery_address }}</textarea>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('address') }}
                                             </div>
@@ -261,119 +237,166 @@
             </div>
         </div>
 
-    </div>
-    <script type="text/javascript">
-        $("#division_id").change(function() {
-            var division_id = $(this).val();
-            if (division_id) {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url('getDistrict') }}?division_id=" + division_id,
-                    success: function(res) {
-                        if (res) {
-                            $("#district_id").empty();
-                            $("#district_id").append('<option value="">Select District</option>');
-                            $.each(res, function(key, value) {
-                                $("#district_id").append('<option value="' + key + '">' +
-                                    value + '</option>');
-                            });
-                        } else {
-                            $("#district_id").empty();
-                        }
-                    },
-                });
-            } else {
-                $("#district_id").empty();
-                $("#township_id").empty(); // Reset township dropdown
-            }
-        });
-
-        $("#district_id").change(function() {
-            var district_id = $(this).val();
-            if (district_id) {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url('getTownship') }}?district_id=" + district_id,
-                    success: function(res) {
-                        if (res) {
-                            $("#township_id").empty();
-                            $("#township_id").append('<option value="">Select Township</option>');
-                            $.each(res, function(key, value) {
-                                $("#township_id").append('<option value="' + key + '">' +
-                                    value + '</option>');
-                            });
-                        } else {
-                            $("#township_id").empty();
-                        }
-                    },
-                });
-            } else {
-                $("#township_id").empty();
-            }
-        });
-
-        $('#product').change(function() {
-            var product_id = $(this).val();
-
-            $.ajax({
-                url: "{{ url('getProductInfo') }}?product_id=" + product_id,
-                method: "GET",
-                success: function(data) {
-                    console.log(data);
-
-                    $('#price').val(data.price);
-                    $('#discount').val(data.item_discount);
+        <script type="text/javascript">
+            $("#division_id").change(function() {
+                var division_id = $(this).val();
+                if (division_id) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('getDistrict') }}?division_id=" + division_id,
+                        success: function(res) {
+                            if (res) {
+                                $("#district_id").empty();
+                                $("#district_id").append('<option value="">Select District</option>');
+                                $.each(res, function(key, value) {
+                                    $("#district_id").append('<option value="' + key + '">' +
+                                        value + '</option>');
+                                });
+                            } else {
+                                $("#district_id").empty();
+                            }
+                        },
+                    });
+                } else {
+                    $("#district_id").empty();
+                    $("#township_id").empty(); // Reset township dropdown
                 }
             });
-        });
 
-        //get customer info
-        $('#customer_id').change(function() {
-            var customer_id = $(this).val();
-            console.log(customer_id);
+            $("#district_id").change(function() {
+                var district_id = $(this).val();
+                if (district_id) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('getTownship') }}?district_id=" + district_id,
+                        success: function(res) {
+                            if (res) {
+                                $("#township_id").empty();
+                                $("#township_id").append('<option value="">Select Township</option>');
+                                $.each(res, function(key, value) {
+                                    $("#township_id").append('<option value="' + key + '">' +
+                                        value + '</option>');
+                                });
+                            } else {
+                                $("#township_id").empty();
+                            }
+                        },
+                    });
+                } else {
+                    $("#township_id").empty();
+                }
+            });
 
-            if (customer_id) {
+            $('#product').change(function() {
+                var product_id = $(this).val();
+
                 $.ajax({
-                    type: "GET",
-                    url: "{{ url('getCustomerInfo') }}?customer_id=" + customer_id,
-                    success: function(res) {
-                        console.log(res);
+                    url: "{{ url('getProductInfo') }}?product_id=" + product_id,
+                    method: "GET",
+                    success: function(data) {
+                        console.log(data);
 
-                        $('#phone_primary').val(res.phone_primary);
-                        $('#phone_secondary').val(res.phone_secondary);
-                        $('#division_id').val(res.division_id);
-                        $('#district_id').val(res.district_name);
-                        $('#township_id').val(res.township_name);
-                        $('#address').val(res.address);
+                        $('#price').val(data.price);
+                        $('#discount').val(data.item_discount);
                     }
                 });
-            }
-        });
-        $('#category_id').change(function() {
-            var category_id = $(this).val();
-            console.log(category_id);
-            if (category_id) {
-                $.ajax({
-                    type: "GET",
-                    url: "{{ url('getProduct') }}?category_id=" + category_id,
-                    success: function(res) {
-                        console.log(res);
-                        if (res) {
-                            $("#product").empty();
-                            $("#product").append(
-                                '<option value="">Select Product</option>'
-                            );
-                            $.each(res, function(key, value) {
-                                $('#product').append(
-                                    '<option value="' + key + '">' + value + '</option>'
-                                );
-                            });
-                        } else {
-                            $("#product").empty();
+            });
+
+            //get customer info
+            $('#customer_id, #home_no, #street_name').on('input', function() {
+                updateAddress();
+            });
+
+            function updateAddress() {
+                var customer_id = $('#customer_id').val();
+                var home_no = $('#home_no').val();
+                var street_name = $('#street_name').val();
+
+                if (customer_id) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ url('getCustomerInfo') }}?customer_id=" + customer_id,
+                        success: function(res) {
+                            // console.log("hello", res);
+
+                            // Set values for the selects based on received data
+                            $('#phone_primary').val(res.phone_primary);
+                            $('#phone_secondary').val(res.phone_secondary);
+                            $('#division_id').val(res.division_id);
+
+                            // Set the selected option for district_id based on its value
+                            $('#district_id').val(res.district_id);
+
+                            // Set the selected option for township_id based on its value
+                            $('#township_id').val(res.township_id);
+
+                            // Set the values for the dynamic fields
+                            $('#home_no').val(home_no);
+                            $('#street_name').val(street_name);
+
+                            // Set the address field by concatenating all relevant values
+                            $('#address').val(home_no + ', ' + street_name + ', ' + res
+                                .township_name + ', ' + res.division_name);
                         }
-                    },
-                });
+                    });
+                }
             }
-        });
-    </script>
-@endsection
+            $('#category_id').change(function() {
+                var category_id = $(this).val();
+                console.log(category_id);
+                if (category_id) {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route('getProduct') }}?category_id=" + category_id,
+                        success: function(res) {
+                            console.log(res);
+                            if (res && res.length > 0) {
+                                $("#product").empty();
+                                $("#product").append('<option disabled selected>Select Product</option>');
+                                $("#price").val(''); // Clear the price field
+
+                                $.each(res, function(index, product) {
+                                    $('#product').append('<option value="' + product.id + '">' +
+                                        product.product_name + '</option>');
+                                });
+
+                                // Auto-select the first product and update the price
+                                $("#product").val(res[0].id);
+                                $("#price").val(res[0].price);
+                            } else {
+                                $("#product").empty();
+                                $("#price").val('');
+                            }
+                        },
+                    });
+                }
+            });
+            $(document).on("change keyup blur", "#discount", function() {
+                var original_price = $('#price').val();
+                var discount = $('#discount').val();
+                // var quantity = $('#quantity').val();
+                var decimal = (discount / 100).toFixed(2);
+                // console.log(discount);
+                var multiply = original_price * decimal;
+                var discount_price = original_price - multiply;
+                // console.log(discount_price);
+                $('#discount_price').val(discount_price);
+            });
+
+            $(document).on("change keyup blur", "#quantity, #discount_price, #price", function() {
+                var quantity = parseFloat($('#quantity').val()) || 0;
+                var discount_price = parseFloat($('#discount_price').val()) || 0;
+                var original_price = parseFloat($('#price').val()) || 0;
+
+                var total_price;
+
+                if (discount_price === 0) {
+                    total_price = original_price * quantity;
+                } else {
+                    total_price = discount_price * quantity;
+                }
+
+                $('#total_price').val(total_price.toFixed(0)); // Optionally, round to 2 decimal places
+            });
+        </script>
+    @endsection

@@ -48,12 +48,12 @@
                     <span class="link-title">Customer</span>
                 </a>
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a href="{{ route('all.invoice') }}" class="nav-link">
                     <i class="fa fa-sticky-note-o"></i>
                     <span class="link-title">Invoice</span>
                 </a>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a href="{{ route('all.order') }}" class="nav-link">
                     <i class="fa fa-bell"></i>

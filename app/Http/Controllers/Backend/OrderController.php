@@ -29,7 +29,9 @@ class OrderController extends Controller
         $categories = Category::select('name', 'id')->get();
         $customers = Customer::select('customer_name', 'id')->get();
         $divisions = Division::orderby('division_name')->select('division_name', 'id')->get();
-        return view('backend.order.add_order', compact('products', 'customers', 'divisions', 'categories'));
+        $districts = District::orderby('district_name')->select('district_name', 'id')->get();
+        $townships = Township::orderby('township_name')->select('township_name', 'id')->get();
+        return view('backend.order.add_order', compact('products', 'customers', 'divisions', 'categories', 'districts','townships'));
     }
     public function update_order_status(Request $request)
     {
@@ -70,9 +72,10 @@ class OrderController extends Controller
         }
     }
 
-    public function getProduct(Request $request)
+    public function getProduct(Request $request) // choose category auto output product and price
     {
-        $products = Product::where('category_id', $request->category_id)->pluck('product_name', 'id');
+        $products = Product::where('category_id', $request->category_id)->get(['id', 'product_name', 'price']);
+
         return response()->json($products);
     }
     public function StoreOrder(Request $request)
@@ -83,6 +86,7 @@ class OrderController extends Controller
                 'quantity' => ['required', 'numeric'],
                 'total_price' => ['required', 'numeric'],
                 'status' => ['required', 'string', 'max:255'],
+                'payment_method' => ['required'],
             ]);
 
             if ($validator) {
@@ -94,6 +98,7 @@ class OrderController extends Controller
                     $order->quantity = $request->quantity;
                     $order->on_discount = $request->on_discount;
                     $order->total_price = $request->total_price;
+                    $order->payment_method = $request->payment_method;
                     $order->status = $request->status;
                     $order->save();
 
@@ -125,6 +130,7 @@ class OrderController extends Controller
                     $order->quantity = $request->quantity;
                     $order->on_discount = $request->on_discount;
                     $order->total_price = $request->total_price;
+                    $order->payment_method = $request->payment_method;
                     $order->status = $request->status;
                     $order->save();
 
@@ -174,16 +180,11 @@ class OrderController extends Controller
     }
     public function EditOrder($id)
     {
-        $order = Order::find($id);
+        $order = Order::findOrFail($id);
         $categories = Category::select('name', 'id')->get();
         $products = Product::select('product_name', 'id')->get();
         $customers = Customer::get();
         $delivery_info = DeliveryInfo::where('id', '=', $id)->first();
-        // $order_date = date('Y-m-d\TH:i', strtotime($order->order_date));
-        // dd($order_date);
-        // $loan_application_date = date('Y-m-d\TH:i', strtotime($loan->loan_application_date));
-
-        // dd($delivery_info);
         $divisions = Division::select('division_name', 'id')->get();
         $districts = District::where('division_id', '=', $delivery_info->division_id)->select('district_name', 'id')->get();
         $townships = Township::where('district_id', '=', $delivery_info->district_id)->select('township_name', 'id')->get();
@@ -208,15 +209,12 @@ class OrderController extends Controller
             $order->quantity = $request->quantity;
             $order->on_discount = $request->on_discount;
             $order->total_price = $request->total_price;
-            // $order->order_date = $request->order_date;
+            $order->payment_method = $request->payment_method;
             $order->status = $request->status;
             $order->save();
 
             if ($request->product_id) {
                 $delivery_info = DeliveryInfo::where('id', '=', $id)->first();
-                $delivery_info->delete();
-
-                $delivery_info = new DeliveryInfo;
                 $delivery_info->customer_id = $order->customer_id;
                 $delivery_info->division_id = $request->division_id;
                 $delivery_info->district_id = $request->district_id;

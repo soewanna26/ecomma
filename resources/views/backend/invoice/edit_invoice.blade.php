@@ -18,12 +18,12 @@
                                         </ul>
                                     </div>
                                 @endif
-                                <h4 class="card-title text-uppercase">Order Edit</h4>
+                                <h4 class="card-title text-uppercase">Invoice Edit</h4>
                                 {{-- <button class="btn btn-dark">Back</button> --}}
                                 {{-- <p class="card-description">
                                 Basic form layout
                               </p> --}}
-                                <form action="{{ route('orders.update', $order->id) }}" method="POST" class="forms-sample"
+                                <form action="{{ route('update.invoice', $invoice->id) }}" method="POST" class="forms-sample"
                                     enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')

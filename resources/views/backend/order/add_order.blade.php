@@ -67,7 +67,7 @@
                                         <div class="form-group">
                                             <label for=""> Discount %</label>
                                             <input type="text" class="form-control" name="on_discount" id="discount"
-                                                placeholder="Discount">
+                                                placeholder="Discount" value="0">
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('on_discount') }}
                                             </div>
@@ -79,10 +79,7 @@
                                         <div class="form-group">
                                             <label for=""> Discount Price </label>
                                             <input type="number" min="0" class="form-control" name="discount_price"
-                                                id="discount_price" placeholder="Discount Price" required>
-                                            <div class="text-danger form-control-feedback">
-                                                {{ $errors->first('discount_price') }}
-                                            </div>
+                                                value="0" id="discount_price" placeholder="Discount Price">
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -196,7 +193,11 @@
                                             <label for="">District</label>
                                             <select class="form-select bg-dark text-light" name="district_id"
                                                 id="district_id" aria-label="Default select example">
-                                                <option></option>
+                                                <option disabled selected> Select District </option>
+                                                @foreach ($districts as $district)
+                                                    <option value="{{ $district->id }}">
+                                                        {{ $district->district_name }}</option>
+                                                @endforeach
                                             </select>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('district_id') }}
@@ -208,7 +209,11 @@
                                             <label for="">Township</label>
                                             <select class="form-select bg-dark text-light" name="township_id"
                                                 id="township_id" aria-label="Default select example">
-                                                <option></option>
+                                                <option disabled selected> Select Township </option>
+                                                @foreach ($townships as $township)
+                                                    <option value="{{ $township->id }}">
+                                                        {{ $township->township_name }}</option>
+                                                @endforeach
                                             </select>
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('township_id') }}
@@ -234,6 +239,21 @@
                                                 value="{{ old('street_name') }}">
                                             <div class="text-danger form-control-feedback">
                                                 {{ $errors->first('street_name') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group payment">
+                                            <label for="">Payment</label>
+                                            <select class="form-select bg-dark text-white" name="payment_method"
+                                                aria-label="Default select example" required>
+                                                <option disabled selected> Select Payment</option>
+                                                <option value="cash">Cash</option>
+                                                <option value="kpay">Kpay</option>
+                                                <option value="banking">Banking</option>
+                                            </select>
+                                            <div class="text-danger form-control-feedback">
+                                                {{ $errors->first('payment_method') }}
                                             </div>
                                         </div>
                                     </div>
@@ -323,52 +343,100 @@
         });
 
         //get customer info
-        $('#customer_id').change(function() {
-            var customer_id = $(this).val();
-            console.log(customer_id);
+        $('#customer_id, #home_no, #street_name').on('input', function() {
+            updateAddress();
+        });
+
+        function updateAddress() {
+            var customer_id = $('#customer_id').val();
+            var home_no = $('#home_no').val();
+            var street_name = $('#street_name').val();
 
             if (customer_id) {
                 $.ajax({
                     type: "GET",
                     url: "{{ url('getCustomerInfo') }}?customer_id=" + customer_id,
                     success: function(res) {
-                        console.log(res);
+                        // console.log("hello", res);
 
+                        // Set values for the selects based on received data
                         $('#phone_primary').val(res.phone_primary);
                         $('#phone_secondary').val(res.phone_secondary);
                         $('#division_id').val(res.division_id);
-                        $('#district_id').val(res.district_name);
-                        $('#township_id').val(res.township_name);
-                        $('#address').val(res.address);
+
+                        // Set the selected option for district_id based on its value
+                        $('#district_id').val(res.district_id);
+
+                        // Set the selected option for township_id based on its value
+                        $('#township_id').val(res.township_id);
+
+                        // Set the values for the dynamic fields
+                        $('#home_no').val(home_no);
+                        $('#street_name').val(street_name);
+
+                        // Set the address field by concatenating all relevant values
+                        $('#address').val(home_no + ', ' + street_name + ', ' + res
+                            .township_name + ', ' + res.division_name);
                     }
                 });
             }
-        });
+        }
         $('#category_id').change(function() {
             var category_id = $(this).val();
             console.log(category_id);
             if (category_id) {
                 $.ajax({
                     type: "GET",
-                    url: "{{ url('getProduct') }}?category_id=" + category_id,
+                    url: "{{ route('getProduct') }}?category_id=" + category_id,
                     success: function(res) {
                         console.log(res);
-                        if (res) {
+                        if (res && res.length > 0) {
                             $("#product").empty();
-                            $("#product").append(
-                                '<option value="">Select Product</option>'
-                            );
-                            $.each(res, function(key, value) {
-                                $('#product').append(
-                                    '<option value="' + key + '">' + value + '</option>'
-                                );
+                            $("#product").append('<option disabled selected>Select Product</option>');
+                            $("#price").val(''); // Clear the price field
+
+                            $.each(res, function(index, product) {
+                                $('#product').append('<option value="' + product.id + '">' +
+                                    product.product_name + '</option>');
                             });
+
+                            // Auto-select the first product and update the price
+                            $("#product").val(res[0].id);
+                            $("#price").val(res[0].price);
                         } else {
                             $("#product").empty();
+                            $("#price").val('');
                         }
                     },
                 });
             }
+        });
+        $(document).on("change keyup blur", "#discount", function() {
+            var original_price = $('#price').val();
+            var discount = $('#discount').val();
+            // var quantity = $('#quantity').val();
+            var decimal = (discount / 100).toFixed(2);
+            // console.log(discount);
+            var multiply = original_price * decimal;
+            var discount_price = original_price - multiply;
+            // console.log(discount_price);
+            $('#discount_price').val(discount_price);
+        });
+
+        $(document).on("change keyup blur", "#quantity, #discount_price, #price", function() {
+            var quantity = parseFloat($('#quantity').val()) || 0;
+            var discount_price = parseFloat($('#discount_price').val()) || 0;
+            var original_price = parseFloat($('#price').val()) || 0;
+
+            var total_price;
+
+            if (discount_price === 0) {
+                total_price = original_price * quantity;
+            } else {
+                total_price = discount_price * quantity;
+            }
+
+            $('#total_price').val(total_price.toFixed(0)); // Optionally, round to 2 decimal places
         });
     </script>
 @endsection

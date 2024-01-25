@@ -22,15 +22,11 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Order ID</th>
-                                                <th>Invoice ID</th>
                                                 <th>Customer</th>
                                                 <th>Product Name</th>
-                                                <th>Size</th>
                                                 <th>Delivery Info</th>
                                                 <th>Payment method</th>
                                                 <th>Status</th>
-                                                {{-- <th>Order Date</th> --}}
-                                                <th>Edit Order Status</th>
                                                 <th class="text-center">Action</th>
                                             </tr>
                                         </thead>
@@ -40,15 +36,13 @@
                                                 <tr>
                                                     <td>{{ $i++ }}</td>
                                                     <td id="order-{{ $order->id }}">{{ $order->id }}</td>
-                                                    <td>{{ $order->invoice_id }}</td>
                                                     <td>{{ $order->customer ? $order->customer->customer_name : "-" }}</td>
                                                     <td>{{$order->product->product_name}}</td>
-                                                    <td>{{ $order->size }}</td>
                                                     <td>{{ $order->customer ?$order->customer->phone_primary:"-" }}<br><br>
                                                         {{ $order->deli_info->delivery_address ?? '' }}
                                                     </td>
                                                     <td><span class="badge badge-pill bg-info">
-                                                            {{ $order->invoice->payment_method ?? '' }}
+                                                            {{ $order->payment_method ?? '' }}
                                                         </span></td>
                                                     <td id="badge-{{ $order->id }}">
                                                         @if ($order->status == 'pending')
@@ -73,7 +67,7 @@
                                                             </span>
                                                         @endif
                                                     </td>
-                                                    <td>
+                                                    {{-- <td>
                                                         <form id="update-status-form" action="{{ route('update_status') }}"
                                                             method="POST">
                                                             @csrf
@@ -105,7 +99,7 @@
                                                                 </div>
                                                             </div>
                                                         </form>
-                                                    </td>
+                                                    </td> --}}
                                                     <td class="text-center">
                                                         <a href="{{route('edit.order',$order->id)}}">
                                                             <button class="btn btn-outline-secondary pt-1 pb-1">
